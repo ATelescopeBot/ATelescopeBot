@@ -6,11 +6,13 @@ import (
 	"syscall"
 
 	"github.com/ATelescopeBot/ATelescopeBot/events"
+	"github.com/ATelescopeBot/ATelescopeBot/handler"
 	"github.com/bwmarrin/discordgo"
 	log "github.com/sirupsen/logrus"
 )
 
 func main() {
+	log.SetLevel(log.DebugLevel)
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp: true,
 	})
@@ -23,6 +25,7 @@ func main() {
 
 	dg.AddHandler(events.Ready)
 	dg.AddHandler(events.MessageCreate)
+	dg.AddHandler(handler.Get)
 
 	dg.Identify.Intents = discordgo.IntentsAll
 
@@ -35,5 +38,13 @@ func main() {
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
 
+	defer Shutdown(dg)
 	defer dg.Close()
+}
+
+func Shutdown(s *discordgo.Session) {
+	log.Info("Shutdown requested.")
+	for _, v := range s.State.Guilds {
+		handler.RemoveCommands(s, v)
+	}
 }

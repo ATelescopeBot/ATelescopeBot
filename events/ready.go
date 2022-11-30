@@ -3,6 +3,7 @@ package events
 import (
 	"fmt"
 
+	_ "github.com/ATelescopeBot/ATelescopeBot/commands/info"
 	"github.com/ATelescopeBot/ATelescopeBot/handler"
 	"github.com/bwmarrin/discordgo"
 	log "github.com/sirupsen/logrus"
